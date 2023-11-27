@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  tansaku:
+    build:
+      context: "../../../GlobeHopper"
+      dockerfile: "docker/globehopper/Dockerfile"
+    volumes:
+      - ../../../GlobeHopper:/app
+    stdin_open: true
+    tty: true
+    ports:
+      - "5000:5000"
+    container_name: globehopper
+    env_file:
+      - ../../.env
