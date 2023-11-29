@@ -61,3 +61,20 @@ def get_images():
         return jsonify(response.json()), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
+@globehopper_Blueprint.route('/video', methods=['POST'])
+def get_videos():
+    input_payload = request.get_json(cache=False)
+    logging.info("Request to fetch location Data - %s", input_payload['parameters']['location'])
+    location = str(input_payload['parameters']['location'])
+    query_count = str(input_payload['parameters']['query_count'])
+    try:
+        url = "https://" + PEXELS_API_HOST + "/videos/search?query=" + location + "&per_page=" + query_count
+        headers = {
+            "Authorization": PEXELS_API_KEY
+        }
+        response = requests.get(url, headers=headers)
+        return jsonify(response.json()), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
