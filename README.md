@@ -30,7 +30,7 @@ $ git clone https://github.com/IntelegixLabs/GlobeHopper.git
 $ cd GlobeHopper
 $ docker-compose -f docker/globehopper/docker-compose.yml up -d --build
 ```
-Note: make sure you have secrets
+Note: make sure you have secrets in root folder
 
 ## 3. Getting Started With React UI Application
 
