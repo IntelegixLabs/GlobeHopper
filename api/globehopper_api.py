@@ -2,11 +2,13 @@ import os
 
 import requests
 import logging
+import json
 
 from flask import Blueprint, jsonify, request
 from flask_api import status
+import cohere
 
-
+from datetime import date
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,6 +18,9 @@ WEATHER_RAPID_API_KEY = os.getenv("WEATHER_RAPID_API_KEY")
 
 PEXELS_API_HOST = os.getenv("PEXELS_API_HOST")
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+
+COHERE_API_KEY = os.getenv('COHERE_API_KEY')
+co = cohere.Client(COHERE_API_KEY)
 
 globehopper_Blueprint = Blueprint('globehopper_Blueprint', __name__)
 
@@ -76,5 +81,68 @@ def get_videos():
         }
         response = requests.get(url, headers=headers)
         return jsonify(response.json()), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
+@globehopper_Blueprint.route('/travel_planner', methods=['POST'])
+def travel_planner():
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for travel_plan - %s", input_payload['parameters'])
+    source = str(input_payload['parameters']['source'])
+    destination = str(input_payload['parameters']['destination'])
+    start_date = str(input_payload['parameters']['start_date'])
+    end_date = str(input_payload['parameters']['end_date'])
+    # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
+    # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
+    try:
+        prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
+            start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
+                { "introduction": "about_""" + str(destination) + """ ",
+                 "itinerary": 
+                    [
+                        { 
+                            "Day": "Day number follow format as 1" ,
+                            "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
+                            "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
+                            "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
+                            "night": "suggest popular restaurants to have dinner, suggest places of interest, commute to places"
+                        }
+                    ] 
+                }"""
+
+        response = co.generate(
+            model='command-nightly',
+            prompt=prompt,
+            # temperature=5,
+            # max_tokens=2048,
+        )
+
+        res = response.generations[0].text
+
+        # Replace "\n\n" with actual newline characters
+        formatted_text = res.replace("\\n\\n", "\n")
+
+        start_index, end_index = 0, -1
+
+        for i in range(0, len(formatted_text)):
+            if formatted_text[i:i+7] == "```json":
+                start_index = i+7
+                break
+
+        for i in range(len(formatted_text), -1, -1):
+            if formatted_text[i:i+3] == "```":
+                end_index += i
+                break
+
+        formatted_text = formatted_text[start_index:end_index]
+
+        try:
+            logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
+            formatted_text = json.loads(formatted_text)
+        except:
+            pass
+
+        return jsonify(formatted_text), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
