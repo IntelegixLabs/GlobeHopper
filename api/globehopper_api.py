@@ -91,22 +91,25 @@ def travel_planner():
     logging.info("Request for travel_plan - %s", input_payload['parameters'])
     source = str(input_payload['parameters']['source'])
     destination = str(input_payload['parameters']['destination'])
-    start_date = str(input_payload['parameters']['start_date']).split("-")
-    end_date = str(input_payload['parameters']['end_date']).split("-")
-    start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
-    end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
+    start_date = str(input_payload['parameters']['start_date'])
+    end_date = str(input_payload['parameters']['end_date'])
+    # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
+    # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
     try:
-        prompt = ("Context - Consider yourself a travel planner. Show me day wise planner for all days from " + str(
-            start_date) + " to " + str(end_date) + "Display the output in form of JSON object:\
-            {trip-planner:[{intro : about_" + destination + ".},{flights: suggest flights to take from "
-            + source + " to " + destination + "},{ hotel: suggest popular hotel_names}, {dates:" + str(start_date) +
-            " to " + str(end_date) + ".},{itinerary: from " + str(start_date) + " to " + str(end_date) + ". [Day: number,[\
-            { morning: suggest popular restaurants to have breakfast, suggest places of interest, commute to places},\
-            {afternoon: suggest popular restaurants to have lunch, suggest places of interest, commute to places},\
-            {evening: suggest popular restaurants to have dinner, suggest places of interest, commute to places},\
-            ],{return: suggest return flights to take},],}, ], }")
-
-        logging.info("Prompt generated to fetch travel_plan - %s", prompt)
+        prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
+            start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
+                { "introduction": "about_""" + str(destination) + """ ",
+                 "itinerary": 
+                    [
+                        { 
+                            "Day": "Day number follow format as 1" ,
+                            "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
+                            "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
+                            "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
+                            "night": "suggest popular restaurants to have dinner, suggest places of interest, commute to places"
+                        }
+                    ] 
+                }"""
 
         response = co.generate(
             model='command-nightly',
@@ -119,9 +122,26 @@ def travel_planner():
 
         # Replace "\n\n" with actual newline characters
         formatted_text = res.replace("\\n\\n", "\n")
-        formatted_text = json.dumps(formatted_text)
 
-        print(formatted_text)
+        start_index, end_index = 0, -1
+
+        for i in range(0, len(formatted_text)):
+            if formatted_text[i:i+7] == "```json":
+                start_index = i+7
+                break
+
+        for i in range(len(formatted_text), -1, -1):
+            if formatted_text[i:i+3] == "```":
+                end_index += i
+                break
+
+        formatted_text = formatted_text[start_index:end_index]
+
+        try:
+            logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
+            formatted_text = json.loads(formatted_text)
+        except:
+            pass
 
         return jsonify(formatted_text), status.HTTP_200_OK
     except Exception as err:
