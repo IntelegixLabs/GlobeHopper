@@ -8,7 +8,6 @@ from flask import Blueprint, jsonify, request
 from flask_api import status
 import cohere
 
-from datetime import date
 from dotenv import load_dotenv
 
 load_dotenv()
