@@ -8,7 +8,6 @@ from flask import Blueprint, jsonify, request
 from flask_api import status
 import cohere
 
-from datetime import date
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -89,10 +88,17 @@ def get_videos():
 def travel_planner():
     input_payload = request.get_json(cache=False)
     logging.info("Request for travel_plan - %s", input_payload['parameters'])
-    source = str(input_payload['parameters']['source'])
     destination = str(input_payload['parameters']['destination'])
-    start_date = str(input_payload['parameters']['start_date'])
-    end_date = str(input_payload['parameters']['end_date'])
+
+    try:
+        source = str(input_payload['parameters']['source'])
+        start_date = str(input_payload['parameters']['start_date'])
+        end_date = str(input_payload['parameters']['end_date'])
+    except:
+        source = "Kolkata"
+        start_date = "2023-12-10"
+        end_date = "2023-12-15"
+
     # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
     # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
     try:
