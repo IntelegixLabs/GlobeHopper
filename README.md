@@ -13,7 +13,7 @@
 ## 1. Project Architecture
 
 <p align="center">
-  <img src="data/globehopper.svg" />
+  <img src="data/globehopper.png" />
 </p> 
 
 ## 2. Getting Started With The Flask API Application
