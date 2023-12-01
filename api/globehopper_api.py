@@ -104,7 +104,7 @@ def travel_planner():
     try:
         prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
             start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
-                { "introduction": "about_""" + str(destination) + """ ",
+                { "introduction": "Give brief description about """ + str(destination) + """ ",
                  "itinerary": 
                     [
                         { 
