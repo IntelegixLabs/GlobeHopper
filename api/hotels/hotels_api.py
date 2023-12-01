@@ -50,7 +50,7 @@ def get_search_hotels_api() -> Response:
             return [{
                 "image-url": data["propertyImage"]["image"]["url"],
                 "name": data["name"],
-                "price": data["lead"]["formatted"],
+                "price": data["price"]["lead"]["formatted"],
                 "rating": data.get("star"),
             } for data in datas]
 
