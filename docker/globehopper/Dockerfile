@@ -1,4 +1,5 @@
 FROM python:3.10.6-slim-bullseye
+LABEL maintainer="Subhransu <subhransud525@gmail.com>"
 RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
 
 COPY ./requirements.txt /requirements.txt
