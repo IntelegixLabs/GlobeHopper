@@ -75,7 +75,7 @@ $ npm run dev
 ## 5. Application Screenshots / <a href="">Demo.</a>
 
 <p align="center">
-  <img src="" />
+  <img src="data/GlobeHopper.gif" />
   <hr/>
 </p>
 
