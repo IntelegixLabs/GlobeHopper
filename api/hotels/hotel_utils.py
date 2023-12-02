@@ -27,7 +27,7 @@ class Hotels:
         if callable endpoint not found we simply return error with unprocessable entry code.
         """
         self.endpoints = APICall.third_party_endpoints("hotels")
-        if self.endpoints["url"] is None:
+        if self.endpoints.get("url") is None or self.endpoints.get("headers") is None:
             return abort(422, "Callable endpoint is not found")
         self.api_call = APICall(self.endpoints["url"] + self.path, self.endpoints["headers"], self.payload,
                                 query_params=query_params)

@@ -22,7 +22,9 @@ def get_search_hotels_api() -> Response:
     logging.info("------Fetching hotels --------")
     try:
         hotel_api = Hotels("/v2/hotels/search")
-        location = request.args.get("location", "Kolkata")
+        location = request.args.get("location")
+        if not location:
+            return abort(422, "location argument is required")
         country = request.args.get("country", "IN")
         locale = request.args.get("locale", "en_IN")
         region_id = get_city_id(query_location=location, country=country, locale=locale).get("city_id", "792")
@@ -57,7 +59,7 @@ def get_search_hotels_api() -> Response:
         return jsonify(json_format_style(datas=res.json()["properties"]), status.HTTP_200_OK)
 
     except Exception as err:
-        return jsonify({"message": f"Module - Error - {err}"}, status.HTTP_400_BAD_REQUEST)
+        return jsonify({"message": f"Module /search-hotels api - Error - {err}"}, status.HTTP_400_BAD_REQUEST)
 
 
 @hotel_blp.route("/region")
@@ -65,7 +67,10 @@ def get_region_api() -> Response:
     """
     Every-city or any location has unique id, and It will fetch that id and return.
     """
-    location = request.args.get("location", "Kolkata")
-    country = request.args.get("country", "IN")
-    locale = request.args.get("locale", "en_IN")
-    return jsonify(get_city_id(query_location=location, country=country, locale=locale))
+    try:
+        location = request.args.get("location", "Kolkata")
+        country = request.args.get("country", "IN")
+        locale = request.args.get("locale", "en_IN")
+        return jsonify(get_city_id(query_location=location, country=country, locale=locale))
+    except Exception as err:
+        return jsonify({"message": f"Module /region api - Error - {err}"}, status.HTTP_400_BAD_REQUEST)
