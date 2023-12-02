@@ -1,4 +1,5 @@
-from flask import abort, Response
+from flask import abort
+from requests import Response
 
 from utils.api_utils import APICall
 
@@ -43,4 +44,4 @@ def get_city_id(query_location: str, country: str, locale: str) -> dict:
     hotel_api = Hotels("/v2/regions")
     querystring = {"query": query_location, "domain": country, "locale": locale}
     res = hotel_api.build_request(query_params=querystring)
-    return {"city_id": res.json()["cityId"]}
+    return {"city_id": res.json()["data"][0]["gaiaId"]}
