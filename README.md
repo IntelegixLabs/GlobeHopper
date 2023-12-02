@@ -2,11 +2,27 @@
 
 ### PROBLEM STATEMENT
 
+In the realm of travel planning, the process of <b>curating packages, crafting itineraries, and making informed decisions</b> about the <b>best times for travel and economical transportation</b> options can be <b>intricate and time-consuming.</b> 
+
+The existing challenges in the travel industry <b>need to include the need for quicker, more efficient solutions</b> that <b>enhance the overall experience for travelers,</b> ensuring they <b>receive personalized, cost-effective, and well-planned journeys.</b>
+
+## Package Builder & Dynamic Itinerary Generator 
+- Take input as User preferences.
+- Customized map plan with given dates.
+- Real-time market trends.
+- Curate personalized travel packages using GenAI.
+- Budget constraints.
+- Weather conditions.
+- Local events.
+- Suggest the Best time to travel.
+- Modify itineraries, and the AI will adjust recommendations accordingly.
+
+
 
 ### SOLUTION
 
-
-### OUR APPROACH
+<p> We’ve designed a Flask backend & React frontend-based client-server architecture to develop a website with state-of-the-art Generative AI technology to prompt the Large Language Model to make API calls to give outputs based on user inputs to customize trip plans. 
+</p>
 
 
 
@@ -30,7 +46,7 @@ $ git clone https://github.com/IntelegixLabs/GlobeHopper.git
 $ cd GlobeHopper
 $ docker-compose -f docker/globehopper/docker-compose.yml up -d --build
 ```
-Note: make sure you have secrets in root folder
+Note: make sure you have secrets in the root folder
 
 ## 3. Getting Started With React UI Application
 
