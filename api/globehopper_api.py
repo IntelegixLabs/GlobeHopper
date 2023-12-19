@@ -152,3 +152,56 @@ def travel_planner():
         return jsonify(formatted_text), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
+@globehopper_Blueprint.route('/list_famous_destinations', methods=['POST'])
+def list_famous_destinations():
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for List of Famous Destinations - %s", input_payload['parameters'])
+
+    try:
+        travel_destination = str(input_payload['parameters']['travel_destination'])
+    except:
+        travel_destination = "Europe"
+
+    try:
+        prompt = """Consider yourself a travel planner. List of famous travel Destinations city in """ + str(
+            travel_destination) + """,Display the output in form of valid JSON object:
+                { "city": "List of city names" }
+                """
+
+        response = co.generate(
+            model='command-nightly',
+            prompt=prompt,
+            # temperature=5,
+            # max_tokens=2048,
+        )
+
+        res = response.generations[0].text
+
+        # Replace "\n\n" with actual newline characters
+        formatted_text = res.replace("\\n\\n", "\n")
+
+        start_index, end_index = 0, -1
+
+        for i in range(0, len(formatted_text)):
+            if formatted_text[i:i+7] == "```json":
+                start_index = i+7
+                break
+
+        for i in range(len(formatted_text), -1, -1):
+            if formatted_text[i:i+3] == "```":
+                end_index += i
+                break
+
+        formatted_text = formatted_text[start_index:end_index]
+
+        try:
+            logging.info("Prompt generated List of Famous Destinations - %s", formatted_text)
+            formatted_text = json.loads(formatted_text)
+        except:
+            pass
+
+        return jsonify(formatted_text), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
