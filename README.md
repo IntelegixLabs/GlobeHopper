@@ -74,8 +74,9 @@ $ npm run dev
 
 ## 5. Application Screenshots / <a href="">Demo.</a>
 
+[![Talk SynthSeg](data/globehopper.png)](https://www.youtube.com/watch?v=iJRNFXWZXf0)
+
 <p align="center">
-  [![Talk SynthSeg](data/globehopper.png)](https://www.youtube.com/watch?v=iJRNFXWZXf0)
   <img src="data/GlobeHopper.gif" />
   <hr/>
 </p>
