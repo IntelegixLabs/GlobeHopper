@@ -8,6 +8,13 @@ from flask import Blueprint, jsonify, request
 from flask_api import status
 import cohere
 
+from langchain.chat_models import ChatCohere
+from langchain.vectorstores import Chroma
+from langchain.embeddings import CohereEmbeddings
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,11 +28,14 @@ PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 co = cohere.Client(COHERE_API_KEY)
 
+embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
+db = Chroma(persist_directory="./db/chroma_db", embedding_function=embeddings)
+
 globehopper_Blueprint = Blueprint('globehopper_Blueprint', __name__)
 
 
 @globehopper_Blueprint.route('/demo', methods=['POST'])
-def chat_bot():
+def chat_botx():
     try:
         return jsonify({"message": f"Module - Error "}), status.HTTP_400_BAD_REQUEST
     except Exception as err:
@@ -132,12 +142,12 @@ def travel_planner():
         start_index, end_index = 0, -1
 
         for i in range(0, len(formatted_text)):
-            if formatted_text[i:i+7] == "```json":
-                start_index = i+7
+            if formatted_text[i:i + 7] == "```json":
+                start_index = i + 7
                 break
 
         for i in range(len(formatted_text), -1, -1):
-            if formatted_text[i:i+3] == "```":
+            if formatted_text[i:i + 3] == "```":
                 end_index += i
                 break
 
@@ -185,12 +195,12 @@ def list_famous_destinations():
         start_index, end_index = 0, -1
 
         for i in range(0, len(formatted_text)):
-            if formatted_text[i:i+7] == "```json":
-                start_index = i+7
+            if formatted_text[i:i + 7] == "```json":
+                start_index = i + 7
                 break
 
         for i in range(len(formatted_text), -1, -1):
-            if formatted_text[i:i+3] == "```":
+            if formatted_text[i:i + 3] == "```":
                 end_index += i
                 break
 
@@ -203,5 +213,38 @@ def list_famous_destinations():
             pass
 
         return jsonify(formatted_text), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
+@globehopper_Blueprint.route('/chat_bot', methods=['POST'])
+def chat_bot():
+    inputpayload = request.get_json(cache=False)
+    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
+    user_input = str(inputpayload['parameters']['user_message'])
+    try:
+
+        chat = ChatCohere()
+
+        retriever = db.as_retriever()
+
+        template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities, 
+        map, phone number, pincode, website url below details based only on the following context,
+        if you don't know the answer just say I don't know, don't try to make up:
+        {context}
+        Question: {question}
+        """
+        prompt = ChatPromptTemplate.from_template(template)
+
+        chain = (
+                {"context": retriever, "question": RunnablePassthrough()}
+                | prompt
+                | chat
+                | StrOutputParser()
+        )
+
+        response = chain.invoke(user_input)
+
+        return jsonify(response), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
