@@ -245,6 +245,8 @@ def chat_bot():
 
         response = chain.invoke(user_input)
 
-        return jsonify(response), status.HTTP_200_OK
+        response_bot_message = {"result": response}
+
+        return jsonify(response_bot_message), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
