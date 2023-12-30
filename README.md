@@ -46,6 +46,17 @@ $ cd GlobeHopper
 $ pip install -r requirements.txt
 $ python app.py
 ```
+
+Delete the current db/chroma_db folder inside root directory and then download the chroma_db.zip from the given url and extract and copy the chroma_db folder in db folder
+
+```sh
+$ cd db 
+$ rm chroma_db
+$ wget https://drive.google.com/file/d/1cajdpavDIFgMFwpi2nrn9j7mxvaxzBou/view?usp=sharing
+$ unzip chroma_db.zip
+$ rm chroma_db.zip
+```
+
 ### To run this project with docker locally
 ```sh
 $ git clone https://github.com/IntelegixLabs/GlobeHopper.git
