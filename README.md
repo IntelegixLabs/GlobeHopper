@@ -32,7 +32,13 @@ The existing challenges in the travel industry <b>need to include the need for q
   <img src="data/globehopper.png" />
 </p> 
 
-## 2. Getting Started With The Flask API Application
+## 2. Chatbot Generative AI RAG (Retrieval Augment Generation) Architecture
+
+<p align="center">
+  <img src="data/RAG.png" />
+</p> 
+
+## 3. Getting Started With The Flask API Application
 
 ```sh
 $ git clone https://github.com/IntelegixLabs/GlobeHopper.git
@@ -48,7 +54,7 @@ $ docker-compose -f docker/globehopper/docker-compose.yml up -d --build
 ```
 Note: make sure you have secrets in the root folder
 
-## 3. Getting Started With React UI Application
+## 4. Getting Started With React UI Application
 
 ```sh
 $ git clone https://github.com/IntelegixLabs/GlobeHopperUI.git
@@ -57,7 +63,7 @@ $ npm i
 $ npm run dev
 ```
 
-## 4. Project Requirements
+## 5. Project Requirements
 
 <h4>Languages</h4>
 <ul>
@@ -72,12 +78,12 @@ $ npm run dev
   <li>npm v8.11.0</li>
 </ul>
 
-## 5. Application Screenshots / <a href="">Demo.</a>
+## 6. Application Screenshots / <a href="">Demo.</a>
 
-[![Talk SynthSeg](data/globehopper.png)](https://www.youtube.com/watch?v=iJRNFXWZXf0)
+[//]: # ([![Talk SynthSeg]&#40;data/GlobeHopper_youtube.png&#41;]&#40;https://www.youtube.com/watch?v=iJRNFXWZXf0&#41;)
 
 <p align="center">
-  <img src="data/GlobeHopper.gif" />
+  <a href="https://www.youtube.com/watch?v=iJRNFXWZXf0"><img src="data/GlobeHopper_youtube.png" /></a>
   <hr/>
 </p>
 
