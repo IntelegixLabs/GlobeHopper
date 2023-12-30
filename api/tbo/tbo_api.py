@@ -1,12 +1,10 @@
 import os
 
 import requests
-import logging
-from datetime import datetime, timedelta
 import json
 
 from dotenv import load_dotenv
-from flask import abort, Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, request
 from flask_api import status
 
 load_dotenv()
