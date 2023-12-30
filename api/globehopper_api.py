@@ -1,21 +1,18 @@
+import json
+import logging
 import os
 
+import cohere
 import requests
-import logging
-import json
-
+from dotenv import load_dotenv
 from flask import Blueprint, jsonify, request
 from flask_api import status
-import cohere
-
 from langchain.chat_models import ChatCohere
-from langchain.vectorstores import Chroma
 from langchain.embeddings import CohereEmbeddings
 from langchain.prompts import ChatPromptTemplate
+from langchain.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -248,5 +245,18 @@ def chat_bot():
         response_bot_message = {"result": response}
 
         return jsonify(response_bot_message), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
+@globehopper_Blueprint.route('/country-info', methods=['GET'])
+def country_info():
+    import wikipedia as wiki  # imported locally as it currently used here only.
+    travel_destination = str(request.args.get("travel_destination", "Europe"))
+    logging.info(f"Request for country-information - {travel_destination}")
+    try:
+        travel_summary = wiki.WikipediaPage(travel_destination).summary
+        logging.info(f"Successfully got the country information - {travel_destination}")
+        return jsonify({"travel_summary": travel_summary}), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
