@@ -249,14 +249,13 @@ def chat_bot():
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
 
-@globehopper_Blueprint.route('/country-info', methods=['GET'])
-def country_info():
+@globehopper_Blueprint.route('/country-info/<string:country>', methods=['GET'])
+def country_info(country):
     import wikipedia as wiki  # imported locally as it currently used here only.
-    travel_destination = str(request.args.get("travel_destination", "Europe"))
-    logging.info(f"Request for country-information - {travel_destination}")
+    logging.info(f"Request for country-information - {country}")
     try:
-        travel_summary = wiki.WikipediaPage(travel_destination).summary
-        logging.info(f"Successfully got the country information - {travel_destination}")
-        return jsonify({"travel_summary": travel_summary}), status.HTTP_200_OK
+        country_summary = wiki.WikipediaPage(country).summary
+        logging.info(f"Successfully got the country information - {country}")
+        return jsonify({"country_summary": country_summary}), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
