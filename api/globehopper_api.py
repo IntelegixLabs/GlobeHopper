@@ -193,7 +193,7 @@ def list_famous_destinations():
     try:
         prompt = """Consider yourself a travel planner. List of famous travel Destinations city in """ + str(
             travel_destination) + """,Display the output in form of valid JSON object:
-                { "city": "List of city names" }
+                { "city": ["List of city names"] }
                 """
 
         # response = co.generate(
