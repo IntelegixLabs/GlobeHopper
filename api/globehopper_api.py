@@ -2,7 +2,9 @@ import json
 import logging
 import os
 
+from openai import OpenAI
 import cohere
+
 import requests
 from dotenv import load_dotenv
 from flask import Blueprint, jsonify, request
@@ -103,8 +105,8 @@ def travel_planner():
         end_date = str(input_payload['parameters']['end_date'])
     except:
         source = "Kolkata"
-        start_date = "2023-12-10"
-        end_date = "2023-12-15"
+        start_date = "2024-1-2"
+        end_date = "2024-1-5"
 
     # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
     # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
@@ -124,31 +126,48 @@ def travel_planner():
                     ] 
                 }"""
 
-        response = co.generate(
-            model='command-nightly',
-            prompt=prompt,
-            # temperature=5,
-            # max_tokens=2048,
+        # response = co.generate(
+        #     model='command-nightly',
+        #     prompt=prompt,
+        #     # temperature=5,
+        #     # max_tokens=2048,
+        # )
+        #
+        # res = response.generations[0].text
+        #
+        # # Replace "\n\n" with actual newline characters
+        # formatted_text = res.replace("\\n\\n", "\n")
+        #
+        # start_index, end_index = 0, -1
+        #
+        # for i in range(0, len(formatted_text)):
+        #     if formatted_text[i:i + 7] == "```json":
+        #         start_index = i + 7
+        #         break
+        #
+        # for i in range(len(formatted_text), -1, -1):
+        #     if formatted_text[i:i + 3] == "```":
+        #         end_index += i
+        #         break
+        #
+        # formatted_text = formatted_text[start_index:end_index]
+
+        client = OpenAI(
+            # This is the default and can be omitted
+            api_key=os.environ.get("OPEN_AI_KEY"),
         )
 
-        res = response.generations[0].text
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=os.environ.get("GPT_MODEL_ID"),
+        )
 
-        # Replace "\n\n" with actual newline characters
-        formatted_text = res.replace("\\n\\n", "\n")
-
-        start_index, end_index = 0, -1
-
-        for i in range(0, len(formatted_text)):
-            if formatted_text[i:i + 7] == "```json":
-                start_index = i + 7
-                break
-
-        for i in range(len(formatted_text), -1, -1):
-            if formatted_text[i:i + 3] == "```":
-                end_index += i
-                break
-
-        formatted_text = formatted_text[start_index:end_index]
+        formatted_text = response.choices[0].message.content
 
         try:
             logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
@@ -177,31 +196,48 @@ def list_famous_destinations():
                 { "city": "List of city names" }
                 """
 
-        response = co.generate(
-            model='command-nightly',
-            prompt=prompt,
-            # temperature=5,
-            # max_tokens=2048,
+        # response = co.generate(
+        #     model='command-nightly',
+        #     prompt=prompt,
+        #     # temperature=5,
+        #     # max_tokens=2048,
+        # )
+        #
+        # res = response.generations[0].text
+        #
+        # # Replace "\n\n" with actual newline characters
+        # formatted_text = res.replace("\\n\\n", "\n")
+        #
+        # start_index, end_index = 0, -1
+        #
+        # for i in range(0, len(formatted_text)):
+        #     if formatted_text[i:i + 7] == "```json":
+        #         start_index = i + 7
+        #         break
+        #
+        # for i in range(len(formatted_text), -1, -1):
+        #     if formatted_text[i:i + 3] == "```":
+        #         end_index += i
+        #         break
+        #
+        # formatted_text = formatted_text[start_index:end_index]
+
+        client = OpenAI(
+            # This is the default and can be omitted
+            api_key=os.environ.get("OPEN_AI_KEY"),
         )
 
-        res = response.generations[0].text
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=os.environ.get("GPT_MODEL_ID"),
+        )
 
-        # Replace "\n\n" with actual newline characters
-        formatted_text = res.replace("\\n\\n", "\n")
-
-        start_index, end_index = 0, -1
-
-        for i in range(0, len(formatted_text)):
-            if formatted_text[i:i + 7] == "```json":
-                start_index = i + 7
-                break
-
-        for i in range(len(formatted_text), -1, -1):
-            if formatted_text[i:i + 3] == "```":
-                end_index += i
-                break
-
-        formatted_text = formatted_text[start_index:end_index]
+        formatted_text = response.choices[0].message.content
 
         try:
             logging.info("Prompt generated List of Famous Destinations - %s", formatted_text)

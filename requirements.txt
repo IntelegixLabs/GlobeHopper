@@ -8,3 +8,4 @@ cohere==4.37
 langchain==0.0.352
 chromadb==0.4.21
 wikipedia==1.4.0
+openai==1.6.1
