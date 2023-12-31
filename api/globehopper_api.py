@@ -2,9 +2,7 @@ import json
 import logging
 import os
 
-from openai import OpenAI
 import cohere
-
 import requests
 from dotenv import load_dotenv
 from flask import Blueprint, jsonify, request
@@ -15,6 +13,9 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from openai import OpenAI
+
+from api.utils import get_pixel_images, fetch_weather_data
 
 load_dotenv()
 
@@ -47,14 +48,7 @@ def get_weather_data():
     logging.info("Request to fetch weather Data - %s", input_payload['parameters']['location'])
     location = str(input_payload['parameters']['location'])
     try:
-        url = "https://" + WEATHER_RAPID_API_HOST + "/weather"
-        querystring = {"location": location, "format": "json", "u": "f"}
-        headers = {
-            "X-RapidAPI-Key": WEATHER_RAPID_API_KEY,
-            "X-RapidAPI-Host": WEATHER_RAPID_API_HOST
-        }
-        response = requests.get(url, headers=headers, params=querystring)
-        return jsonify(response.json()), status.HTTP_200_OK
+        return jsonify(fetch_weather_data(location)), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
@@ -66,12 +60,7 @@ def get_images():
     location = str(input_payload['parameters']['location'])
     query_count = str(input_payload['parameters']['query_count'])
     try:
-        url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count
-        headers = {
-            "Authorization": PEXELS_API_KEY
-        }
-        response = requests.get(url, headers=headers)
-        return jsonify(response.json()), status.HTTP_200_OK
+        return jsonify(get_pixel_images(location, query_count)), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
@@ -96,86 +85,95 @@ def get_videos():
 @globehopper_Blueprint.route('/travel_planner', methods=['POST'])
 def travel_planner():
     input_payload = request.get_json(cache=False)
-    logging.info("Request for travel_plan - %s", input_payload['parameters'])
-    destination = str(input_payload['parameters']['destination'])
-
     try:
-        source = str(input_payload['parameters']['source'])
-        start_date = str(input_payload['parameters']['start_date'])
-        end_date = str(input_payload['parameters']['end_date'])
-    except:
-        source = "Kolkata"
-        start_date = "2024-1-2"
-        end_date = "2024-1-5"
+        result = []
+        for params in input_payload:
+            logging.info("Request for travel_plan - %s", params['parameters'])
+            destination = str(params['parameters']['destination'])
+            query_count = str(params['parameters']['query_count'])
+            try:
+                source = str(params['parameters']['source'])
+                start_date = str(params['parameters']['start_date'])
+                end_date = str(params['parameters']['end_date'])
+            except:
+                source = "Kolkata"
+                start_date = "2024-1-2"
+                end_date = "2024-1-5"
 
-    # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
-    # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
-    try:
-        prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
-            start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
-                { "introduction": "Give brief description about """ + str(destination) + """ ",
-                 "itinerary": 
-                    [
-                        { 
-                            "Day": "Day number follow format as 1" ,
-                            "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
-                            "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
-                            "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
-                            "night": "suggest popular restaurants to have dinner, suggest places of interest, commute to places"
+            # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
+            # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
+            try:
+                prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
+                    start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
+                        { "introduction": "Give brief description about """ + str(destination) + """ ",
+                         "itinerary": 
+                            [
+                                { 
+                                    "Day": "Day number follow format as 1" ,
+                                    "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
+                                    "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
+                                    "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
+                                    "night": "suggest popular restaurants to have dinner, suggest places of interest, commute to places"
+                                }
+                            ] 
+                        }"""
+
+                # response = co.generate(
+                #     model='command-nightly',
+                #     prompt=prompt,
+                #     # temperature=5,
+                #     # max_tokens=2048,
+                # )
+                #
+                # res = response.generations[0].text
+                #
+                # # Replace "\n\n" with actual newline characters
+                # formatted_text = res.replace("\\n\\n", "\n")
+                #
+                # start_index, end_index = 0, -1
+                #
+                # for i in range(0, len(formatted_text)):
+                #     if formatted_text[i:i + 7] == "```json":
+                #         start_index = i + 7
+                #         break
+                #
+                # for i in range(len(formatted_text), -1, -1):
+                #     if formatted_text[i:i + 3] == "```":
+                #         end_index += i
+                #         break
+                #
+                # formatted_text = formatted_text[start_index:end_index]
+
+                client = OpenAI(
+                    # This is the default and can be omitted
+                    api_key=os.environ.get("OPEN_AI_KEY"),
+                )
+
+                response = client.chat.completions.create(
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": prompt,
                         }
-                    ] 
-                }"""
+                    ],
+                    model=os.environ.get("GPT_MODEL_ID"),
+                )
 
-        # response = co.generate(
-        #     model='command-nightly',
-        #     prompt=prompt,
-        #     # temperature=5,
-        #     # max_tokens=2048,
-        # )
-        #
-        # res = response.generations[0].text
-        #
-        # # Replace "\n\n" with actual newline characters
-        # formatted_text = res.replace("\\n\\n", "\n")
-        #
-        # start_index, end_index = 0, -1
-        #
-        # for i in range(0, len(formatted_text)):
-        #     if formatted_text[i:i + 7] == "```json":
-        #         start_index = i + 7
-        #         break
-        #
-        # for i in range(len(formatted_text), -1, -1):
-        #     if formatted_text[i:i + 3] == "```":
-        #         end_index += i
-        #         break
-        #
-        # formatted_text = formatted_text[start_index:end_index]
+                formatted_text = response.choices[0].message.content
 
-        client = OpenAI(
-            # This is the default and can be omitted
-            api_key=os.environ.get("OPEN_AI_KEY"),
-        )
+                try:
+                    logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
+                    formatted_text = json.loads(formatted_text)
+                except:
+                    pass
+                formatted_text["itinerary_images"] = get_pixel_images(location=destination, query_count=query_count)
+                formatted_text["weather"] = fetch_weather_data(location=destination)
+                result.append(formatted_text)
 
-        response = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            model=os.environ.get("GPT_MODEL_ID"),
-        )
+            except Exception as err:
+                return jsonify({"message": f"For loop - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
-        formatted_text = response.choices[0].message.content
-
-        try:
-            logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
-            formatted_text = json.loads(formatted_text)
-        except:
-            pass
-
-        return jsonify(formatted_text), status.HTTP_200_OK
+        return jsonify(result), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
