@@ -248,39 +248,39 @@ def list_famous_destinations():
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
 
-@globehopper_Blueprint.route('/chat_bot', methods=['POST'])
-def chat_bot():
-    inputpayload = request.get_json(cache=False)
-    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
-    user_input = str(inputpayload['parameters']['user_message'])
-    try:
-
-        chat = ChatCohere()
-
-        retriever = db.as_retriever()
-
-        template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities, 
-        map, phone number, pincode, website url below details based only on the following context,
-        if you don't know the answer just say I don't know, don't try to make up:
-        {context}
-        Question: {question}
-        """
-        prompt = ChatPromptTemplate.from_template(template)
-
-        chain = (
-                {"context": retriever, "question": RunnablePassthrough()}
-                | prompt
-                | chat
-                | StrOutputParser()
-        )
-
-        response = chain.invoke(user_input)
-
-        response_bot_message = {"result": response}
-
-        return jsonify(response_bot_message), status.HTTP_200_OK
-    except Exception as err:
-        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+# @globehopper_Blueprint.route('/chat_bot', methods=['POST'])
+# def chat_bot():
+#     inputpayload = request.get_json(cache=False)
+#     logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
+#     user_input = str(inputpayload['parameters']['user_message'])
+#     try:
+#
+#         chat = ChatCohere()
+#
+#         retriever = db.as_retriever()
+#
+#         template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities,
+#         map, phone number, pincode, website url below details based only on the following context,
+#         if you don't know the answer just say I don't know, don't try to make up:
+#         {context}
+#         Question: {question}
+#         """
+#         prompt = ChatPromptTemplate.from_template(template)
+#
+#         chain = (
+#                 {"context": retriever, "question": RunnablePassthrough()}
+#                 | prompt
+#                 | chat
+#                 | StrOutputParser()
+#         )
+#
+#         response = chain.invoke(user_input)
+#
+#         response_bot_message = {"result": response}
+#
+#         return jsonify(response_bot_message), status.HTTP_200_OK
+#     except Exception as err:
+#         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
 
 @globehopper_Blueprint.route('/country-info/<string:country>', methods=['GET'])
