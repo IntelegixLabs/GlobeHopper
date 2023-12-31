@@ -47,7 +47,9 @@ $ pip install -r requirements.txt
 $ python app.py
 ```
 
-Delete the current db/chroma_db folder inside root directory and then download the chroma_db.zip from the given url and extract and copy the chroma_db folder in db folder
+Note: Add the keys in .env file
+
+### Delete the current db/chroma_db folder inside root directory and then download the chroma_db.zip from the given url and extract and copy the chroma_db folder in db folder
 
 ```sh
 $ cd db 
@@ -73,6 +75,8 @@ $ cd GlobeHopperUI
 $ npm i
 $ npm run dev
 ```
+
+Note: Add the keys in .env file
 
 ## 5. Project Requirements
 
