@@ -8,15 +8,16 @@ The existing challenges in the travel industry <b>need to include the need for q
 
 ## Package Builder & Dynamic Itinerary Generator 
 - Take input as User preferences.
+- Select destination, i.e Europe -> and then select the cities you want to travel, our Gen AI App, will create a travel 
+  itinerary for you that you can customize according to your needs.
 - Customized map plan with given dates.
-- Real-time market trends.
+- Chatbot, trained on TBO hotels data.
 - Curate personalized travel packages using GenAI.
-- Budget constraints.
 - Weather conditions.
 - Local events.
 - Suggest the Best time to travel.
 - Modify itineraries, and the AI will adjust recommendations accordingly.
-
+- Book hotels, using TBO APIs.
 
 
 ### SOLUTION
@@ -99,7 +100,22 @@ Note: Add the keys in .env file
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=iJRNFXWZXf0"><img src="data/GlobeHopper_youtube.png" /></a>
-  <hr/>
+</p>
+
+
+<p align="center">
+  <img src="data/Screenshots/1.png" width="450"/>
+  <img src="data/Screenshots/2.png" width="450"/>
+<br />
+<hr />
+<br />
+  <img src="data/Screenshots/3.png" width="450"/>
+  <img src="data/Screenshots/4.png" width="450"/>
+<br />
+<hr />
+<br />
+  <img src="data/Screenshots/5.png" width="450"/>
+  <img src="data/Screenshots/6.png" width="450"/>
 </p>
 
 
