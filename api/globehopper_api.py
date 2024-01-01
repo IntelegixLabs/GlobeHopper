@@ -178,6 +178,91 @@ def travel_planner():
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
 
+@globehopper_Blueprint.route('/travel_planner_single_destination', methods=['POST'])
+def travel_planner_single_destination():
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for travel_plan - %s", input_payload['parameters'])
+    destination = str(input_payload['parameters']['destination'])
+
+    try:
+        source = str(input_payload['parameters']['source'])
+        start_date = str(input_payload['parameters']['start_date'])
+        end_date = str(input_payload['parameters']['end_date'])
+    except:
+        source = "Kolkata"
+        start_date = "2024-1-2"
+        end_date = "2024-1-6"
+
+    try:
+        prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
+            start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
+                { "introduction": "Give brief description about """ + str(destination) + """ ",
+                 "itinerary": 
+                    [
+                        { 
+                            "Day": "Day number follow format as 1" ,
+                            "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
+                            "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
+                            "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
+                            "night": "suggest popular restaurants to have dinner, suggest places of interest, commute to places"
+                        }
+                    ] 
+                }"""
+
+        # response = co.generate(
+        #     model='command-nightly',
+        #     prompt=prompt,
+        #     # temperature=5,
+        #     # max_tokens=2048,
+        # )
+        #
+        # res = response.generations[0].text
+        #
+        # # Replace "\n\n" with actual newline characters
+        # formatted_text = res.replace("\\n\\n", "\n")
+        #
+        # start_index, end_index = 0, -1
+        #
+        # for i in range(0, len(formatted_text)):
+        #     if formatted_text[i:i + 7] == "```json":
+        #         start_index = i + 7
+        #         break
+        #
+        # for i in range(len(formatted_text), -1, -1):
+        #     if formatted_text[i:i + 3] == "```":
+        #         end_index += i
+        #         break
+        #
+        # formatted_text = formatted_text[start_index:end_index]
+
+        client = OpenAI(
+            # This is the default and can be omitted
+            api_key=os.environ.get("OPEN_AI_KEY"),
+        )
+
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=os.environ.get("GPT_MODEL_ID"),
+        )
+
+        formatted_text = response.choices[0].message.content
+
+        try:
+            logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
+            formatted_text = json.loads(formatted_text)
+        except:
+            pass
+
+        return jsonify(formatted_text), status.HTTP_200_OK
+    except Exception as err:
+        return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
+
+
 @globehopper_Blueprint.route('/list_famous_destinations', methods=['POST'])
 def list_famous_destinations():
     input_payload = request.get_json(cache=False)
