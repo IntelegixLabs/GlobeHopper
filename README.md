@@ -117,5 +117,7 @@ Note: Add the keys in .env file
 
 
 
-## 6. Components built 
-* [x] Building Phase Started
+## 6. Components to be built (Work In Progress)
+* [x] UI improvement
+* [x] Adding Voice Chat and voice response functionality, using Gen AI.
+* [x] TBO Flight Integration.
