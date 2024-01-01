@@ -104,18 +104,18 @@ Note: Add the keys in .env file
 
 
 <p align="center">
-  <img src="data/Screenshots/1.png" width="450"/>
-  <img src="data/Screenshots/2.png" width="450"/>
+  <img src="data/Screenshots/1.png" width="400"/>
+  <img src="data/Screenshots/2.png" width="400"/>
 <br />
 <hr />
 <br />
-  <img src="data/Screenshots/3.png" width="450"/>
-  <img src="data/Screenshots/4.png" width="450"/>
+  <img src="data/Screenshots/3.png" width="400"/>
+  <img src="data/Screenshots/4.png" width="400"/>
 <br />
 <hr />
 <br />
-  <img src="data/Screenshots/5.png" width="450"/>
-  <img src="data/Screenshots/6.png" width="450"/>
+  <img src="data/Screenshots/5.png" width="400"/>
+  <img src="data/Screenshots/6.png" width="400"/>
 </p>
 
 
