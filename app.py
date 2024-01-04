@@ -11,6 +11,7 @@ import APP_Constants
 from api.globehopper_api import globehopper_Blueprint
 from api.hotels.hotels_api import hotel_blp
 from api.tbo.tbo_api import tbo_blp
+from api.travel_chat_gpt.travel_chat_gpt import travel_chat_blp
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,7 @@ CORS(app)
 app.register_blueprint(blueprint=globehopper_Blueprint, url_prefix=APP_Constants.APP_ENDPOINT)
 app.register_blueprint(blueprint=hotel_blp, url_prefix=APP_Constants.APP_ENDPOINT)
 app.register_blueprint(blueprint=tbo_blp, url_prefix=APP_Constants.APP_ENDPOINT)
+app.register_blueprint(blueprint=travel_chat_blp, url_prefix=APP_Constants.APP_ENDPOINT)
 
 rth = logging.handlers.RotatingFileHandler(
     filename='./logs/globehopper.log',
