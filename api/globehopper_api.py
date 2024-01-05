@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import date, timedelta
 
 import cohere
 import requests
@@ -85,23 +86,21 @@ def get_videos():
 @globehopper_Blueprint.route('/travel_planner', methods=['POST'])
 def travel_planner():
     input_payload = request.get_json(cache=False)
+    cities = input_payload["data"]["cities"]
+    photo_count = input_payload["data"]["photo_count"]
     try:
         result = []
-        for params in input_payload:
-            logging.info("Request for travel_plan - %s", params['parameters'])
-            destination = str(params['parameters']['destination'])
-            query_count = str(params['parameters']['query_count'])
-            try:
-                source = str(params['parameters']['source'])
-                start_date = str(params['parameters']['start_date'])
-                end_date = str(params['parameters']['end_date'])
-            except:
-                source = "Kolkata"
-                start_date = "2024-1-2"
-                end_date = "2024-1-5"
+        for city in cities:
+            logging.info("Request for travel_plan - %s", city)
+            destination = str(city)
+            query_count = str(photo_count)
+            today = str(date.today()).split("-")
+            today = today[2] + "-" + today[1] + "-" + today[0]
+            after_three_days = str(date.today() + timedelta(days=3)).split("-")
+            after_three_days = after_three_days[2] + "-" + after_three_days[1] + "-" + after_three_days[0]
+            start_date = today
+            end_date = after_three_days
 
-            # start_date = date(int(start_date[2]), int(start_date[1]), int(start_date[0]))
-            # end_date = date(int(end_date[2]), int(end_date[1]), int(end_date[0]))
             try:
                 prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
                     start_date) + """ to """ + str(end_date) + """Display the output in form of valid JSON object:
@@ -159,21 +158,21 @@ def travel_planner():
                     model=os.environ.get("GPT_MODEL_ID"),
                 )
 
-                formatted_text = response.choices[0].message.content
-
                 try:
-                    logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
-                    formatted_text = json.loads(formatted_text)
+                    resp = response.choices[0].message.content
                 except:
-                    pass
-                formatted_text["itinerary_images"] = get_pixel_images(location=destination, query_count=query_count)
-                formatted_text["weather"] = fetch_weather_data(location=destination)
+                    resp = {"introduction": "", "itinerary": []}
+
+                formatted_text = {"name": city, "travel_details": json.loads(resp),
+                                  "images": get_pixel_images(location=destination, query_count=query_count),
+                                  "weather": fetch_weather_data(location=destination)}
+
                 result.append(formatted_text)
 
             except Exception as err:
                 return jsonify({"message": f"For loop - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
-        return jsonify(result), status.HTTP_200_OK
+        return jsonify({"data": result}), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
@@ -190,8 +189,12 @@ def travel_planner_single_destination():
         end_date = str(input_payload['parameters']['end_date'])
     except:
         source = "Kolkata"
-        start_date = "2024-1-2"
-        end_date = "2024-1-6"
+        today = str(date.today()).split("-")
+        today = today[2] + "-" + today[1] + "-" + today[0]
+        after_three_days = str(date.today() + timedelta(days=5)).split("-")
+        after_three_days = after_three_days[2] + "-" + after_three_days[1] + "-" + after_three_days[0]
+        start_date = today
+        end_date = after_three_days
 
     try:
         prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
