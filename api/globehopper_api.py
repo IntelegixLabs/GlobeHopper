@@ -347,7 +347,7 @@ def chat_bot():
 
         retriever = db.as_retriever()
 
-        template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities, 
+        template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities,
         map, phone number, pincode, website url below details based only on the following context,
         if you don't know the answer just say I don't know, don't try to make up:
         {context}
