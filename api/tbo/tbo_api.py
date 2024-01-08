@@ -169,7 +169,109 @@ def hotel_details():
             "Authorization": "Basic " + TBO_KEY
         }
         response = requests.request("POST", url, headers=headers, data=payload)
-        return jsonify(response.json()), status.HTTP_200_OK
+
+        response = response.json()
+
+        response_output = {}
+
+        try:
+            Address = response["HotelDetails"][0]["Address"]
+        except:
+            Address = None
+
+        try:
+            Attractions = response["HotelDetails"][0]["Attractions"]
+        except:
+            Attractions = None
+
+        try:
+            CheckInTime = response["HotelDetails"][0]["CheckInTime"]
+        except:
+            CheckInTime = None
+
+        try:
+            CheckOutTime = response["HotelDetails"][0]["CheckOutTime"]
+        except:
+            CheckOutTime = None
+
+        try:
+            CityId = response["HotelDetails"][0]["CityId"]
+        except:
+            CityId = None
+
+        try:
+            CityName = response["HotelDetails"][0]["CityName"]
+        except:
+            CityName = None
+
+        try:
+            CountryCode = response["HotelDetails"][0]["CountryCode"]
+        except:
+            CountryCode = None
+
+        try:
+            CountryName = response["HotelDetails"][0]["CountryName"]
+        except:
+            CountryName = None
+
+        try:
+            Description = response["HotelDetails"][0]["Description"]
+        except:
+            Description = None
+
+        try:
+            FaxNumber = response["HotelDetails"][0]["FaxNumber"]
+        except:
+            FaxNumber = None
+
+        try:
+            HotelCode = response["HotelDetails"][0]["HotelCode"]
+        except:
+            HotelCode = None
+
+        try:
+            HotelFacilities = response["HotelDetails"][0]["HotelFacilities"]
+        except:
+            HotelFacilities = None
+
+        try:
+            HotelName = response["HotelDetails"][0]["HotelName"]
+        except:
+            HotelName = None
+
+        try:
+            HotelRating = response["HotelDetails"][0]["HotelRating"]
+        except:
+            HotelRating = None
+
+        try:
+            Images = response["HotelDetails"][0]["Images"]
+        except:
+            Images = None
+
+        try:
+            Map = response["HotelDetails"][0]["Map"]
+        except:
+            Map = None
+
+        try:
+            PhoneNumber = response["HotelDetails"][0]["PhoneNumber"]
+        except:
+            PhoneNumber = None
+
+        try:
+            PinCode = response["HotelDetails"][0]["PinCode"]
+        except:
+            PinCode = None
+
+        response_output["data"] = [{"Address": Address, "Attractions": Attractions, "CheckInTime": CheckInTime,
+                                    "CheckOutTime": CheckOutTime, "CityId": CityId, "CityName": CityName,
+                                    "CountryCode": CountryCode, "CountryName": CountryName, "Description": Description,
+                                    "FaxNumber": FaxNumber, "HotelCode": HotelCode, "HotelFacilities": HotelFacilities,
+                                    "HotelName": HotelName, "HotelRating": HotelRating, "Images": Images, "Map": Map,
+                                    "PhoneNumber": PhoneNumber, "PinCode": PinCode}]
+
+        return jsonify(response_output), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
