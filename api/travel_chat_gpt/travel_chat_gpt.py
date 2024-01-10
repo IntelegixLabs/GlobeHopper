@@ -155,7 +155,7 @@ def convert_audio_to_text(audio_file):
         return f"Could not request results from Google Speech Recognition service; {e}"
 
 
-@travel_chat_blp.route('/travel-voice-to-text', methods=['POST'])
+@travel_chat_blp.route('/travel_voice_to_text', methods=['POST'])
 def travel_voice_to_text():
     if 'file' not in request.files:
         return {'error': 'No file provided'}, 400
@@ -167,10 +167,10 @@ def travel_voice_to_text():
     text_result = "suggest me some hotels in kolkata"
 
     if audio_file:
-        audio_file.save('input.mp3')
+        audio_file.save('input.wav')
         time.sleep(10)
-        text_result = convert_audio_to_text('input.mp3')
-        os.remove('input.mp3')
+        text_result = convert_audio_to_text('input.wav')
+        os.remove('input.wav')
         # return jsonify({'text': text_result})
 
     user_input = text_result
