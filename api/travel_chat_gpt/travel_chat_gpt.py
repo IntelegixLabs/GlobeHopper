@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import re
 
 import cohere
 from dotenv import load_dotenv
@@ -12,8 +13,6 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain.callbacks.base import BaseCallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 import speech_recognition as sr
 from pydub import AudioSegment
@@ -21,14 +20,18 @@ from gtts import gTTS
 
 load_dotenv()
 
-
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 co = cohere.Client(COHERE_API_KEY)
 
 embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
-db = Chroma(persist_directory="./db/chroma_db", embedding_function=embeddings)
+db_text = Chroma(persist_directory="./db/chroma_db", embedding_function=embeddings)
+db_text_retriever = Chroma(persist_directory="./db/chroma_db_image", embedding_function=embeddings)
 
 travel_chat_blp = Blueprint('travel_chat_Blueprint', __name__)
+
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
 
 
 @travel_chat_blp.route('/chat_bot_new', methods=['POST'])
@@ -38,17 +41,19 @@ def chat_bot_new():
     user_input = str(inputpayload['parameters']['user_message'])
     try:
 
-        retriever = db.as_retriever()
+        chat = ChatCohere()
 
-        model = ChatCohere(
-            streaming=True,
-            callback_manager=BaseCallbackManager([
-                StreamingStdOutCallbackHandler()
-            ]),
-        )
+        retriever = db_text.as_retriever()
+
+        # model = ChatCohere(
+        #     streaming=True,
+        #     callback_manager=BaseCallbackManager([
+        #         StreamingStdOutCallbackHandler()
+        #     ]),
+        # )
 
         template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities, 
-                    map, phone number, pincode, website url, images below details based only on the following context,
+                    map, phone number, pincode, website url below details based only on the following context,
                     if you don't know the answer just say I don't know, don't try to make up:
                     {context}
                     Question: {question}
@@ -57,17 +62,71 @@ def chat_bot_new():
         prompt = ChatPromptTemplate.from_template(template)
 
         chain = (
-                {"context": retriever, "question": RunnablePassthrough()}
+                {"context": retriever | format_docs, "question": RunnablePassthrough()}
                 | prompt
-                | model
+                | chat
                 | StrOutputParser()
         )
 
         response = chain.invoke(user_input)
 
-        response_bot_message = {"result": response}
+        docs = db_text_retriever.similarity_search(user_input, k=5)
 
-        print(response_bot_message)
+        ans = []
+        for i in docs:
+            ans.append(i.page_content)
+
+        hotel_data = []
+
+        for item in ans:
+            hotel_info = {}
+            match_hotel_name = re.search(r'HotelName: ([^\n]+)', item)
+            if match_hotel_name:
+                hotel_info["HotelName"] = match_hotel_name.group(1)
+
+            match_description = re.findall(r'Description: ([^\n]+)', item)
+            if match_description:
+                hotel_info["Description"] = match_description
+
+            hotel_rating = re.findall(r'HotelRating: ([^\n]+)', item)
+            if hotel_rating:
+                hotel_info["HotelRating"] = hotel_rating
+
+            match_images = re.findall(r'Images: ([^\n]+)', item)
+            if match_images:
+                hotel_info["images"] = match_images
+
+            hotel_code = re.findall(r'HotelCode: ([^\n]+)', item)
+            if hotel_code:
+                hotel_info["HotelCode"] = hotel_code
+
+            address = re.findall(r'Address: ([^\n]+)', item)
+            if address:
+                hotel_info["Address"] = address
+
+            hotel_facilities = re.findall(r'HotelFacilities: ([^\n]+)', item)
+            if hotel_facilities:
+                hotel_info["HotelFacilities"] = hotel_facilities
+
+            map_res = re.findall(r'Map: ([^\n]+)', item)
+            if map_res:
+                hotel_info["Map"] = map_res
+
+            phone_number = re.findall(r'PhoneNumber: ([^\n]+)', item)
+            if phone_number:
+                hotel_info["PhoneNumber"] = phone_number
+
+            PinCode = re.findall(r'PinCode: ([^\n]+)', item)
+            if PinCode:
+                hotel_info["PinCode"] = PinCode
+
+            HotelWebsiteUrl = re.findall(r'HotelWebsiteUrl: ([^\n]+)', item)
+            if HotelWebsiteUrl:
+                hotel_info["HotelWebsiteUrl"] = HotelWebsiteUrl
+
+            hotel_data.append(hotel_info)
+
+        response_bot_message = {"result": response.replace("\n\n", "\n "), "Hotel_Details": hotel_data}
 
         return jsonify(response_bot_message), status.HTTP_200_OK
     except Exception as err:
@@ -119,7 +178,7 @@ def travel_voice_to_text():
 
         chat = ChatCohere()
 
-        retriever = db.as_retriever()
+        retriever = db_text.as_retriever()
 
         template = """Fetch hotel names, hotel rating, address, attractions(if any), description, hotel facilities, 
             map, phone number, pincode, website url below details based only on the following context,
