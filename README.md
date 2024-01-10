@@ -8,7 +8,7 @@ The existing challenges in the travel industry <b>need to include the need for q
 
 ## Package Builder & Dynamic Itinerary Generator 
 - Take input as User preferences.
-- Select destination, i.e Europe -> and then select the cities you want to travel, our Gen AI App, will create a travel 
+- Select your destination, i.e. Europe -> and then select the cities you want to travel to, our Gen AI App, will create a travel 
   itinerary for you that you can customize according to your needs.
 - Customized map plan with given dates.
 - Chatbot, trained on TBO hotels data.
@@ -57,10 +57,8 @@ $ cd db
 $ rm chroma_db
 $ wget https://drive.google.com/file/d/1cajdpavDIFgMFwpi2nrn9j7mxvaxzBou/view?usp=sharing
 $ unzip chroma_db.zip
-$ rm chroma_db.zip
 $ wget https://drive.google.com/file/d/1EAKpgr6XQirFK39NvSxAP0_aoo4XP9AZ/view?usp=sharing
 $ unzip chroma_db_image.zip
-$ rm chroma_db_image.zip
 ```
 
 ### To run this project with docker locally
