@@ -11,3 +11,4 @@ pydub==0.25.1
 gTTS==2.5.0
 langchain==0.0.352
 chromadb==0.4.21
+SpeechRecognition==2.1.3
