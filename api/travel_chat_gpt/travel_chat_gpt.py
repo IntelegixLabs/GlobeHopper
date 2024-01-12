@@ -111,16 +111,16 @@ def chat_bot_new():
 
             match_images = re.findall(r'Images: ([^\n]+)', item)
             if match_images:
-                images_encoded = []
+                # images_encoded = []
                 images_url = str(match_images[0]).split(", ")
                 hotel_info["images"] = images_url
-                for i in range(0, min(1, len(images_url))):
-                    try:
-                        base64_data = url_to_base64(images_url[i])
-                        images_encoded.append(base64_data)
-                    except:
-                        continue
-                hotel_info["images_encoded"] = images_encoded
+                # for i in range(0, min(1, len(images_url))):
+                #     try:
+                #         base64_data = url_to_base64(images_url[i])
+                #         images_encoded.append(base64_data)
+                #     except:
+                #         continue
+                # hotel_info["images_encoded"] = images_encoded
 
             hotel_code = re.findall(r'HotelCode: ([^\n]+)', item)
             if hotel_code:
