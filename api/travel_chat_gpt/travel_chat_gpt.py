@@ -2,6 +2,8 @@ import logging
 import os
 import time
 import re
+import requests
+import base64
 
 import cohere
 from dotenv import load_dotenv
@@ -32,6 +34,21 @@ travel_chat_blp = Blueprint('travel_chat_Blueprint', __name__)
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
+
+
+def url_to_base64(image_url):
+    try:
+        # Fetch the image content from the URL
+        response = requests.get(image_url)
+        response.raise_for_status()
+
+        # Encode the image content to Base64
+        base64_data = base64.b64encode(response.content).decode('utf-8')
+        return base64_data
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching image from URL: {e}")
+        return None
 
 
 @travel_chat_blp.route('/chat_bot_new', methods=['POST'])
@@ -94,7 +111,16 @@ def chat_bot_new():
 
             match_images = re.findall(r'Images: ([^\n]+)', item)
             if match_images:
-                hotel_info["images"] = match_images
+                images_encoded = []
+                images_url = str(match_images[0]).split(", ")
+                hotel_info["images"] = images_url
+                for i in range(0, min(1, len(images_url))):
+                    try:
+                        base64_data = url_to_base64(images_url[i])
+                        images_encoded.append(base64_data)
+                    except:
+                        continue
+                hotel_info["images_encoded"] = images_encoded
 
             hotel_code = re.findall(r'HotelCode: ([^\n]+)', item)
             if hotel_code:
