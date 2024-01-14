@@ -16,7 +16,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from openai import OpenAI
 
-from api.utils import get_pixel_images, fetch_weather_data
+from api.utils import get_pixel_images, fetch_weather_data, fetch_hotel_data
 
 load_dotenv()
 
@@ -165,7 +165,8 @@ def travel_planner():
 
                 formatted_text = {"name": city, "travel_details": json.loads(resp),
                                   "images": get_pixel_images(location=destination, query_count=query_count),
-                                  "weather": fetch_weather_data(location=destination)}
+                                  "weather": fetch_weather_data(location=destination),
+                                  "hotel_details": fetch_hotel_data(location=destination)}
 
                 result.append(formatted_text)
 
@@ -338,9 +339,9 @@ def list_famous_destinations():
 
 @globehopper_Blueprint.route('/chat_bot', methods=['POST'])
 def chat_bot():
-    inputpayload = request.get_json(cache=False)
-    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
-    user_input = str(inputpayload['parameters']['user_message'])
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for chatBot - %s", input_payload['parameters']['user_message'])
+    user_input = str(input_payload['parameters']['user_message'])
     try:
 
         chat = ChatCohere()
