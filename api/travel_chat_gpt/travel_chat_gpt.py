@@ -53,9 +53,9 @@ def url_to_base64(image_url):
 
 @travel_chat_blp.route('/chat_bot_new', methods=['POST'])
 def chat_bot_new():
-    inputpayload = request.get_json(cache=False)
-    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
-    user_input = str(inputpayload['parameters']['user_message'])
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for chatBot - %s", input_payload['parameters']['user_message'])
+    user_input = str(input_payload['parameters']['user_message'])
     try:
 
         chat = ChatCohere()
