@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 co = cohere.Client(COHERE_API_KEY)
 PEXELS_API_HOST = os.getenv("PEXELS_API_HOST")
@@ -49,7 +48,6 @@ def fetch_weather_data(location: str):
 
 
 def fetch_hotel_data(location: str):
-
     try:
 
         docs = db_text_retriever.similarity_search(location, k=5)
@@ -108,6 +106,7 @@ def fetch_hotel_data(location: str):
                 hotel_info["HotelWebsiteUrl"] = HotelWebsiteUrl
 
             hotel_data.append(hotel_info)
+
         return hotel_data
     except Exception as e:
         print("Error getting location data {}".format(str(e)))
