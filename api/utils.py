@@ -108,9 +108,6 @@ def fetch_hotel_data(location: str):
                 hotel_info["HotelWebsiteUrl"] = HotelWebsiteUrl
 
             hotel_data.append(hotel_info)
-
-        print(hotel_data)
-
         return hotel_data
     except Exception as e:
         print("Error getting location data {}".format(str(e)))
