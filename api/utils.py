@@ -5,6 +5,8 @@ import cohere
 from langchain.embeddings import CohereEmbeddings
 from langchain.vectorstores import Chroma
 
+from googletrans import Translator
+
 import requests
 from dotenv import load_dotenv
 
@@ -110,3 +112,10 @@ def fetch_hotel_data(location: str):
         return hotel_data
     except Exception as e:
         print("Error getting location data {}".format(str(e)))
+
+
+def language_translate(text="", translate_to="en"):
+    translator = Translator()
+    text = translator.translate(text, src='en', dest=translate_to).text
+    return text
+
