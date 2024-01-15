@@ -11,9 +11,12 @@ WEATHER_RAPID_API_HOST = os.getenv("WEATHER_RAPID_API_HOST")
 WEATHER_RAPID_API_KEY = os.getenv("WEATHER_RAPID_API_KEY")
 
 
-def get_pixel_images(location, query_count="2"):
+def get_pixel_images(location, query_count="2",orientation=None):
     try:
-        url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count
+        if orientation:
+            url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count + "&orientation=" + orientation
+        else:
+            url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count
         headers = {
             "Authorization": PEXELS_API_KEY
         }
