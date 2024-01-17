@@ -7,11 +7,16 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackContext, ContextTypes, Application, \
     ConversationHandler
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 # Replace 'YOUR_TELEGRAM_BOT_TOKEN' with the token you obtained from BotFather
-TELEGRAM_BOT_TOKEN = False
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
 # Replace 'YOUR_FLASK_API_URL' with the URL of your existing Flask API
-FLASK_API_URL = False
+FLASK_API_URL = os.getenv('TELEGRAM_BOT_TOKEN')
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):

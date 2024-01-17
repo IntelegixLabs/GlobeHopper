@@ -25,6 +25,8 @@ load_dotenv()
 COHERE_API_KEY = os.getenv('COHERE_API_KEY')
 co = cohere.Client(COHERE_API_KEY)
 
+# GOOGLE_SPEECH_RECOGNITION_API_KEY = os.getenv('GOOGLE_SPEECH_RECOGNITION_API_KEY')
+
 embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
 db_text = Chroma(persist_directory="./db/chroma_db", embedding_function=embeddings)
 db_text_retriever = Chroma(persist_directory="./db/chroma_db_image", embedding_function=embeddings)
@@ -53,9 +55,9 @@ def url_to_base64(image_url):
 
 @travel_chat_blp.route('/chat_bot_new', methods=['POST'])
 def chat_bot_new():
-    inputpayload = request.get_json(cache=False)
-    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
-    user_input = str(inputpayload['parameters']['user_message'])
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for chatBot - %s", input_payload['parameters']['user_message'])
+    user_input = str(input_payload['parameters']['user_message'])
     try:
 
         chat = ChatCohere()
@@ -159,26 +161,30 @@ def chat_bot_new():
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
 
+def convert_ogg_to_wav(ogg_file, wav_file):
+    audio = AudioSegment.from_ogg(ogg_file)
+    audio.export(wav_file, format="wav")
+
+
 def convert_audio_to_text(audio_file):
-    r = sr.Recognizer()
-
-    # Load the audio file
-    audio = AudioSegment.from_mp3(audio_file)
-
-    # Convert stereo to mono for better recognition
-    audio = audio.set_channels(1)
+    recognizer = sr.Recognizer()
 
     with sr.AudioFile(audio_file) as source:
-        audio_data = r.record(source)
+        # Adjust for ambient noise
+        recognizer.adjust_for_ambient_noise(source)
 
-    # Recognize speech using Google Speech Recognition
-    try:
-        text = r.recognize_google(audio_data)
-        return text
-    except sr.UnknownValueError:
-        return "Speech Recognition could not understand the audio"
-    except sr.RequestError as e:
-        return f"Could not request results from Google Speech Recognition service; {e}"
+        print("Listening...")
+
+        # Record the audio
+        audio = recognizer.record(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            print(text)
+            return text
+        except sr.UnknownValueError:
+            return "Speech Recognition could not understand the audio"
+        except sr.RequestError as e:
+            return f"Could not request results from Google Speech Recognition service; {e}"
 
 
 @travel_chat_blp.route('/travel_voice_to_text', methods=['POST'])
@@ -194,8 +200,11 @@ def travel_voice_to_text():
 
     if audio_file:
         audio_file.save('input.wav')
-        time.sleep(10)
+        time.sleep(5)
+
+        # convert_ogg_to_wav('input.ogg', 'input.wav')
         text_result = convert_audio_to_text('input.wav')
+        print(text_result)
         os.remove('input.wav')
         # return jsonify({'text': text_result})
 
@@ -224,9 +233,9 @@ def travel_voice_to_text():
         response = chain.invoke(user_input)
 
         tts = gTTS(response, lang='en')
-        tts.save('output.mp3')
+        tts.save('output.ogg')
 
-        return send_file('output.mp3', as_attachment=True), status.HTTP_200_OK
+        return send_file('output.ogg', as_attachment=True), status.HTTP_200_OK
 
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
