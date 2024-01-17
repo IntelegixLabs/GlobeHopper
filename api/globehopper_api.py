@@ -3,7 +3,6 @@ import logging
 import os
 from datetime import date, timedelta
 
-import cohere
 import requests
 from dotenv import load_dotenv
 from flask import Blueprint, jsonify, request
@@ -14,9 +13,12 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from openai import OpenAI
 
-from api.utils import get_pixel_images, fetch_weather_data
+import cohere
+from openai import OpenAI
+import google.generativeai as genai
+
+from api.utils import get_pixel_images, fetch_weather_data, fetch_hotel_data, language_translate
 
 load_dotenv()
 
@@ -31,6 +33,9 @@ co = cohere.Client(COHERE_API_KEY)
 
 embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
 db = Chroma(persist_directory="./db/chroma_db", embedding_function=embeddings)
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel(model_name='gemini-pro')
 
 globehopper_Blueprint = Blueprint('globehopper_Blueprint', __name__)
 
@@ -118,6 +123,8 @@ def travel_planner():
                             ] 
                         }"""
 
+                ## Cohere Response
+
                 # response = co.generate(
                 #     model='command-nightly',
                 #     prompt=prompt,
@@ -144,6 +151,9 @@ def travel_planner():
                 #
                 # formatted_text = formatted_text[start_index:end_index]
 
+
+                ## Open AI Response
+
                 client = OpenAI(
                     # This is the default and can be omitted
                     api_key=os.environ.get("OPEN_AI_KEY"),
@@ -166,7 +176,8 @@ def travel_planner():
 
                 formatted_text = {"name": city, "travel_details": json.loads(resp),
                                   "images": get_pixel_images(location=destination, query_count=query_count),
-                                  "weather": fetch_weather_data(location=destination)}
+                                  "weather": fetch_weather_data(location=destination),
+                                  "hotel_details": fetch_hotel_data(location=destination)}
 
                 result.append(formatted_text)
 
@@ -188,6 +199,7 @@ def travel_planner_single_destination():
         source = str(input_payload['parameters']['source'])
         start_date = str(input_payload['parameters']['start_date'])
         end_date = str(input_payload['parameters']['end_date'])
+        language = str(input_payload['parameters']['language'])
     except:
         source = "Kolkata"
         today = str(date.today()).split("-")
@@ -196,6 +208,7 @@ def travel_planner_single_destination():
         after_three_days = after_three_days[2] + "-" + after_three_days[1] + "-" + after_three_days[0]
         start_date = today
         end_date = after_three_days
+        language = "en"
 
     try:
         prompt = """Consider yourself a travel planner. Show me day wise planner for all days from """ + str(
@@ -212,6 +225,8 @@ def travel_planner_single_destination():
                         }
                     ] 
                 }"""
+
+        ## Cohere Response
 
         # response = co.generate(
         #     model='command-nightly',
@@ -239,26 +254,39 @@ def travel_planner_single_destination():
         #
         # formatted_text = formatted_text[start_index:end_index]
 
-        client = OpenAI(
-            # This is the default and can be omitted
-            api_key=os.environ.get("OPEN_AI_KEY"),
-        )
+        ## Open AI Response
 
-        response = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            model=os.environ.get("GPT_MODEL_ID"),
-        )
+        # client = OpenAI(
+        #     # This is the default and can be omitted
+        #     api_key=os.environ.get("OPEN_AI_KEY"),
+        # )
+        #
+        # response = client.chat.completions.create(
+        #     messages=[
+        #         {
+        #             "role": "user",
+        #             "content": prompt,
+        #         }
+        #     ],
+        #     model=os.environ.get("GPT_MODEL_ID"),
+        # )
+        #
+        # formatted_text = response.choices[0].message.content
 
-        formatted_text = response.choices[0].message.content
+        ## Google AI Code
+
+        formatted_text = model.generate_content(prompt).text[3:-3]
 
         try:
-            logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
+            #logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
             formatted_text = json.loads(formatted_text)
+            formatted_text["introduction"] = language_translate(formatted_text["introduction"], language)
+            for i in range(0, len(formatted_text["itinerary"])):
+                formatted_text["itinerary"][i]["Day"] = language_translate(formatted_text["itinerary"][i]["Day"], language)
+                formatted_text["itinerary"][i]["afternoon"] = language_translate(formatted_text["itinerary"][i]["afternoon"], language)
+                formatted_text["itinerary"][i]["evening"] = language_translate(formatted_text["itinerary"][i]["evening"], language)
+                formatted_text["itinerary"][i]["morning"] = language_translate(formatted_text["itinerary"][i]["morning"], language)
+                formatted_text["itinerary"][i]["night"] = language_translate(formatted_text["itinerary"][i]["night"], language)
         except:
             pass
 
@@ -282,6 +310,7 @@ def list_famous_destinations():
             travel_destination) + """,Display the output in form of valid JSON object:
                 { "city": ["List of city names"] }
                 """
+        ## Cohere Response
 
         # response = co.generate(
         #     model='command-nightly',
@@ -309,6 +338,8 @@ def list_famous_destinations():
         #
         # formatted_text = formatted_text[start_index:end_index]
 
+        ## Open AI Response
+
         client = OpenAI(
             # This is the default and can be omitted
             api_key=os.environ.get("OPEN_AI_KEY"),
@@ -326,8 +357,12 @@ def list_famous_destinations():
 
         formatted_text = response.choices[0].message.content
 
+        ## Google AI Response
+
+        # formatted_text = model.generate_content(prompt).text[3:-3]
+
         try:
-            logging.info("Prompt generated List of Famous Destinations - %s", formatted_text)
+            #logging.info("Prompt generated List of Famous Destinations - %s", formatted_text)
             formatted_text = json.loads(formatted_text)
         except:
             pass
@@ -339,9 +374,9 @@ def list_famous_destinations():
 
 @globehopper_Blueprint.route('/chat_bot', methods=['POST'])
 def chat_bot():
-    inputpayload = request.get_json(cache=False)
-    logging.info("Request for chatBot - %s", inputpayload['parameters']['user_message'])
-    user_input = str(inputpayload['parameters']['user_message'])
+    input_payload = request.get_json(cache=False)
+    logging.info("Request for chatBot - %s", input_payload['parameters']['user_message'])
+    user_input = str(input_payload['parameters']['user_message'])
     try:
 
         chat = ChatCohere()
