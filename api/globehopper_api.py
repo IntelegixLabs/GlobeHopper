@@ -65,8 +65,9 @@ def get_images():
     logging.info("Request to fetch location Data - %s", input_payload['parameters']['location'])
     location = str(input_payload['parameters']['location'])
     query_count = str(input_payload['parameters']['query_count'])
+    orientation = input_payload['parameters'].get('orientation')
     try:
-        return jsonify(get_pixel_images(location, query_count)), status.HTTP_200_OK
+        return jsonify(get_pixel_images(location, query_count, orientation=orientation)), status.HTTP_200_OK
     except Exception as err:
         return jsonify({"message": f"Module - Error - {err}"}), status.HTTP_400_BAD_REQUEST
 
@@ -399,7 +400,7 @@ def chat_bot():
 
         response = chain.invoke(user_input)
 
-        response_bot_message = {"result": response}
+        response_bot_message = {"result": response.replace("\n\n", " \n ")}
 
         return jsonify(response_bot_message), status.HTTP_200_OK
     except Exception as err:

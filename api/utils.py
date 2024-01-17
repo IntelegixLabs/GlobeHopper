@@ -23,9 +23,12 @@ embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
 db_text_retriever = Chroma(persist_directory="./db/chroma_db_image", embedding_function=embeddings)
 
 
-def get_pixel_images(location, query_count="2"):
+def get_pixel_images(location, query_count="2",orientation=None):
     try:
-        url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count
+        if orientation:
+            url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count + "&orientation=" + orientation
+        else:
+            url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count
         headers = {
             "Authorization": PEXELS_API_KEY
         }
