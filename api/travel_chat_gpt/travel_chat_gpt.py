@@ -163,7 +163,7 @@ def chat_bot_new():
 
 def convert_ogg_to_wav(ogg_file, wav_file):
     audio = AudioSegment.from_ogg(ogg_file)
-    audio.export(wav_file, format="wav")
+    audio.export(ogg_file.filename, format="wav")
 
 
 def convert_audio_to_text(audio_file):
@@ -196,16 +196,18 @@ def travel_voice_to_text():
     if audio_file.filename == '':
         return {'error': 'No selected file'}, 400
 
+    audio_file = AudioSegment.from_ogg(audio_file).export("voice_input.wav",format="wav")
+
     text_result = "suggest me some hotels in kolkata"
 
     if audio_file:
-        audio_file.save('input.wav')
-        time.sleep(5)
+        # audio_file.save('input.wav')
+        time.sleep(2)
 
         # convert_ogg_to_wav('input.ogg', 'input.wav')
-        text_result = convert_audio_to_text('input.wav')
+        text_result = convert_audio_to_text('voice_input.wav')
         print(text_result)
-        os.remove('input.wav')
+        os.remove('voice_input.wav')
         # return jsonify({'text': text_result})
 
     user_input = text_result

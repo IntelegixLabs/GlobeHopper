@@ -16,7 +16,7 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 
 # Replace 'YOUR_FLASK_API_URL' with the URL of your existing Flask API
-FLASK_API_URL = os.getenv('TELEGRAM_BOT_TOKEN')
+FLASK_API_URL = os.getenv('FLASK_API_URL')
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -208,9 +208,9 @@ async def handle_voice(update: Update, context: CallbackContext) -> None:
     #     file_path = f"{file_path}/voice{datetime.utcnow()}.ogg"
     audio_file = await file.download_as_bytearray()
     # Prepare the files parameter for the POST request
-    files = {'file': ('audio_file.wav', audio_file, 'audio/wav')}
+    files = {'file': ('audio_file.ogg', audio_file, 'audio/ogg')}
     response = requests.post(FLASK_API_URL + "/travel_voice_to_text", files=files)
-    await update.message.reply_voice(response.json())
+    await update.message.reply_voice(response.content)
 
 
 # def send_voice_to_api(voice: str):
