@@ -6,18 +6,30 @@ In the realm of travel planning, the process of <b>curating packages, crafting i
 
 The existing challenges in the travel industry <b>need to include the need for quicker, more efficient solutions</b> that <b>enhance the overall experience for travelers,</b> ensuring they <b>receive personalized, cost-effective, and well-planned journeys.</b>
 
-## Package Builder & Dynamic Itinerary Generator 
-- Take input as User preferences.
+## Package Builder & Dynamic Itinerary Generator
+
+- Take customise input as user preferences.
 - Select your destination, i.e. Europe -> and then select the cities you want to travel to, our Gen AI App, will create a travel 
   itinerary for you that you can customize according to your needs.
-- Customized map plan with given dates.
-- Chatbot, trained on TBO hotels data.
+- Multi Lingual support, enables the user to get the travel itinerary in their preferred language.
+- Customized map/direction from source to destination.
 - Curate personalized travel packages using GenAI.
 - Weather conditions.
-- Local events.
+- Some Iconic images/video of the place you want to travel.
 - Suggest the Best time to travel.
 - Modify itineraries, and the AI will adjust recommendations accordingly.
 - Book hotels, using TBO APIs.
+
+## Chat Bot Functionality
+
+- Chatbot, trained on TBO hotels data.
+- Based on hotel input get hotel details. eg Hotel Name, Facilities, Contact, Address etc.
+- Integration with Telegram Chat Bot.
+- Voice Functionality to enable user to ask a question via audio and get output in audio.
+
+## TBO Hotel Booking
+
+- User can search and book hotels from UI using TBO Hotel Booking API.
 
 
 ### SOLUTION
@@ -119,6 +131,7 @@ Note: Add the keys in .env file
 
 
 ## 6. Components to be built (Work In Progress)
-* [x] UI improvement
-* [x] Adding Voice Chat and voice response functionality, using Gen AI.
+
+* [x] UI improvement.
 * [x] TBO Flight Integration.
+* [x] Enhancing performance improvements in Gen AI.
