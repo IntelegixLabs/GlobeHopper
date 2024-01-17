@@ -194,21 +194,23 @@ async def handle_voice(update: Update, context: CallbackContext) -> None:
     # Download the voice message
     file = await context.bot.get_file(file_id)
     print(file.file_path, file_id)
-    BASE_DIR = Path(__file__).resolve().parent
-    if file.file_path:
-        file_path = os.path.join(BASE_DIR, "static/telegram-bot/{}-{}".format(update.message.chat.first_name,
-                                                                              update.message.chat_id))
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
-        file_path = f"{file_path}/voice{datetime.utcnow()}.ogg"
-        await file.download_to_drive(
-            file_path)
-        await update.message.reply_voice(send_voice_to_api(file_path))
+    # BASE_DIR = Path(__file__).resolve().parent
+    # if file.file_path:
+    #     file_path = os.path.join(BASE_DIR, "static/telegram-bot/{}-{}".format(update.message.chat.first_name,
+    #                                                                           update.message.chat_id))
+    #     if not os.path.exists(file_path):
+    #         os.makedirs(file_path)
+    #     file_path = f"{file_path}/voice{datetime.utcnow()}.ogg"
+    audio_file = await file.download_as_bytearray()
+    # Prepare the files parameter for the POST request
+    files = {'file': ('audio_file.wav', audio_file, 'audio/wav')}
+    response = requests.post(FLASK_API_URL + "/travel_voice_to_text", files=files)
+    await update.message.reply_voice(response.json())
 
 
-def send_voice_to_api(voice: str):
-    # Make a request to your Flask API voice search
-    return requests.post(FLASK_API_URL + "/travel_voice_to_text", files=dict(file=voice)).json()
+# def send_voice_to_api(voice: str):
+#     # Make a request to your Flask API voice search
+#     return requests.post(FLASK_API_URL + "/travel_voice_to_text", files=dict(file=voice)).json()
 
 
 def main() -> None:
