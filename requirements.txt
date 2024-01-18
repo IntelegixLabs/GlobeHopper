@@ -13,4 +13,4 @@ langchain==0.0.352
 chromadb==0.4.21
 SpeechRecognition==3.10.1
 python-telegram-bot==20.7
-
+googletrans-py39==4.0.2
