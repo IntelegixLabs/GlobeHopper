@@ -23,7 +23,7 @@ embeddings = CohereEmbeddings(cohere_api_key=COHERE_API_KEY)
 db_text_retriever = Chroma(persist_directory="./db/chroma_db_image", embedding_function=embeddings)
 
 
-def get_pixel_images(location, query_count="2",orientation=None):
+def get_pixel_images(location, query_count="2", orientation=None):
     try:
         if orientation:
             url = "https://" + PEXELS_API_HOST + "/v1/search?query=" + location + "&per_page=" + query_count + "&orientation=" + orientation
@@ -68,47 +68,69 @@ def fetch_hotel_data(location: str):
             match_hotel_name = re.search(r'HotelName: ([^\n]+)', item)
             if match_hotel_name:
                 hotel_info["HotelName"] = match_hotel_name.group(1)
+            else:
+                hotel_info["HotelName"] = []
 
             match_description = re.findall(r'Description: ([^\n]+)', item)
             if match_description:
                 hotel_info["Description"] = match_description
+            else:
+                hotel_info["Description"] = []
 
             hotel_rating = re.findall(r'HotelRating: ([^\n]+)', item)
             if hotel_rating:
                 hotel_info["HotelRating"] = hotel_rating
+            else:
+                hotel_info["HotelRating"] = []
 
             match_images = re.findall(r'Images: ([^\n]+)', item)
             if match_images:
                 images_url = str(match_images[0]).split(", ")
                 hotel_info["images"] = images_url
+            else:
+                hotel_info["images"] = []
 
             hotel_code = re.findall(r'HotelCode: ([^\n]+)', item)
             if hotel_code:
                 hotel_info["HotelCode"] = hotel_code
+            else:
+                hotel_info["HotelCode"] = []
 
             address = re.findall(r'Address: ([^\n]+)', item)
             if address:
                 hotel_info["Address"] = address
+            else:
+                hotel_info["Address"] = []
 
             hotel_facilities = re.findall(r'HotelFacilities: ([^\n]+)', item)
             if hotel_facilities:
                 hotel_info["HotelFacilities"] = hotel_facilities
+            else:
+                hotel_info["HotelFacilities"] = []
 
             map_res = re.findall(r'Map: ([^\n]+)', item)
             if map_res:
                 hotel_info["Map"] = map_res
+            else:
+                hotel_info["Map"] = []
 
             phone_number = re.findall(r'PhoneNumber: ([^\n]+)', item)
             if phone_number:
                 hotel_info["PhoneNumber"] = phone_number
+            else:
+                hotel_info["PhoneNumber"] = []
 
             PinCode = re.findall(r'PinCode: ([^\n]+)', item)
             if PinCode:
                 hotel_info["PinCode"] = PinCode
+            else:
+                hotel_info["PinCode"] = []
 
             HotelWebsiteUrl = re.findall(r'HotelWebsiteUrl: ([^\n]+)', item)
             if HotelWebsiteUrl:
                 hotel_info["HotelWebsiteUrl"] = HotelWebsiteUrl
+            else:
+                hotel_info["HotelWebsiteUrl"] = []
 
             hotel_data.append(hotel_info)
 
@@ -121,4 +143,3 @@ def language_translate(text="", translate_to="en"):
     translator = Translator()
     text = translator.translate(text, src='en', dest=translate_to).text
     return text
-

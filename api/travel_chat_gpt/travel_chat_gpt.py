@@ -102,18 +102,23 @@ def chat_bot_new():
             match_hotel_name = re.search(r'HotelName: ([^\n]+)', item)
             if match_hotel_name:
                 hotel_info["HotelName"] = match_hotel_name.group(1)
+            else:
+                hotel_info["HotelName"] = []
 
             match_description = re.findall(r'Description: ([^\n]+)', item)
             if match_description:
                 hotel_info["Description"] = match_description
+            else:
+                hotel_info["Description"] = []
 
             hotel_rating = re.findall(r'HotelRating: ([^\n]+)', item)
             if hotel_rating:
                 hotel_info["HotelRating"] = hotel_rating
+            else:
+                hotel_info["HotelRating"] = []
 
             match_images = re.findall(r'Images: ([^\n]+)', item)
             if match_images:
-                # images_encoded = []
                 images_url = str(match_images[0]).split(", ")
                 hotel_info["images"] = images_url
                 # for i in range(0, min(1, len(images_url))):
@@ -123,34 +128,50 @@ def chat_bot_new():
                 #     except:
                 #         continue
                 # hotel_info["images_encoded"] = images_encoded
+            else:
+                hotel_info["images"] = []
 
             hotel_code = re.findall(r'HotelCode: ([^\n]+)', item)
             if hotel_code:
                 hotel_info["HotelCode"] = hotel_code
+            else:
+                hotel_info["HotelCode"] = []
 
             address = re.findall(r'Address: ([^\n]+)', item)
             if address:
                 hotel_info["Address"] = address
+            else:
+                hotel_info["Address"] = []
 
             hotel_facilities = re.findall(r'HotelFacilities: ([^\n]+)', item)
             if hotel_facilities:
                 hotel_info["HotelFacilities"] = hotel_facilities
+            else:
+                hotel_info["HotelFacilities"] = []
 
             map_res = re.findall(r'Map: ([^\n]+)', item)
             if map_res:
                 hotel_info["Map"] = map_res
+            else:
+                hotel_info["Map"] = []
 
             phone_number = re.findall(r'PhoneNumber: ([^\n]+)', item)
             if phone_number:
                 hotel_info["PhoneNumber"] = phone_number
+            else:
+                hotel_info["PhoneNumber"] = []
 
             PinCode = re.findall(r'PinCode: ([^\n]+)', item)
             if PinCode:
                 hotel_info["PinCode"] = PinCode
+            else:
+                hotel_info["PinCode"] = []
 
             HotelWebsiteUrl = re.findall(r'HotelWebsiteUrl: ([^\n]+)', item)
             if HotelWebsiteUrl:
                 hotel_info["HotelWebsiteUrl"] = HotelWebsiteUrl
+            else:
+                hotel_info["HotelWebsiteUrl"] = []
 
             hotel_data.append(hotel_info)
 
