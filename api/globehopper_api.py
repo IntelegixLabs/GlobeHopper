@@ -254,28 +254,28 @@ def travel_planner_single_destination():
         #
         # formatted_text = formatted_text[start_index:end_index]
 
-        ## Open AI Response
+        # Open AI Response
 
-        # client = OpenAI(
-        #     # This is the default and can be omitted
-        #     api_key=os.environ.get("OPEN_AI_KEY"),
-        # )
-        #
-        # response = client.chat.completions.create(
-        #     messages=[
-        #         {
-        #             "role": "user",
-        #             "content": prompt,
-        #         }
-        #     ],
-        #     model=os.environ.get("GPT_MODEL_ID"),
-        # )
-        #
-        # formatted_text = response.choices[0].message.content
+        client = OpenAI(
+            # This is the default and can be omitted
+            api_key=os.environ.get("OPEN_AI_KEY"),
+        )
+
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=os.environ.get("GPT_MODEL_ID"),
+        )
+
+        formatted_text = response.choices[0].message.content
 
         ## Google AI Code
 
-        formatted_text = model.generate_content(prompt).text[3:-3]
+        # formatted_text = model.generate_content(prompt).text[3:-3]
 
         try:
             #logging.info("Prompt generated to fetch travel_plan - %s", formatted_text)
