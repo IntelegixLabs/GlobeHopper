@@ -109,10 +109,8 @@ Note: Add the keys in .env file
 
 ## 6. Application Screenshots / <a href="">Demo.</a>
 
-[//]: # ([![Talk SynthSeg]&#40;data/GlobeHopper_youtube.png&#41;]&#40;https://www.youtube.com/watch?v=iJRNFXWZXf0&#41;)
-
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=A7ku-1vygmk"><img src="data/GlobeHopper_youtube.png" /></a>
+  <a href="https://www.youtube.com/watch?v=h-emDPVAuCE"><img src="data/GlobeHopper_youtube.png" /></a>
 </p>
 
 <br />
