@@ -128,7 +128,7 @@ Note: Add the keys in .env file
 
 
 
-## 6. Components to be built (Work In Progress)
+## 7. Components to be built (Work In Progress)
 
 * [x] UI improvement.
 * [x] TBO Flight Integration.
