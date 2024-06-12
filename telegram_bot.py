@@ -1,16 +1,12 @@
 import os
-from datetime import datetime
-from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, MessageHandler, filters, CallbackContext, ContextTypes, Application, \
     ConversationHandler
 
-from dotenv import load_dotenv
-
 load_dotenv()
-
 
 # Replace 'YOUR_TELEGRAM_BOT_TOKEN' with the token you obtained from BotFather
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -81,6 +77,13 @@ async def handle_message(update: Update, context: CallbackContext):
         await update.message.reply_text(
             keyboard_message,
             reply_markup=ReplyKeyboardMarkup(keyboard)
+        )
+        return ConversationHandler.END
+    elif prompt == "Book hotel 👍":
+        # Todo: Will implement booking through telegram
+        await update.message.reply_text(
+            "Currently you can book hotel from our globehopper website.",
+            reply_markup=ReplyKeyboardRemove()
         )
         return ConversationHandler.END
 
