@@ -199,8 +199,6 @@ async def handle_voice(update: Update, context: CallbackContext) -> None:
     # Handle incoming voice messages
     voice = update.message.voice
     file_id = voice.file_id
-    # import pdb
-    # pdb.set_trace()
     # Download the voice message
     file = await context.bot.get_file(file_id)
     print(file.file_path, file_id)
