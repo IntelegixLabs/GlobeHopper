@@ -66,11 +66,8 @@ Note: Add the keys in .env file
 
 ```sh
 $ cd db 
-$ rm chroma_db
-$ wget https://drive.google.com/file/d/1cajdpavDIFgMFwpi2nrn9j7mxvaxzBou/view?usp=sharing
-$ unzip chroma_db.zip
-$ wget https://drive.google.com/file/d/1EAKpgr6XQirFK39NvSxAP0_aoo4XP9AZ/view?usp=sharing
-$ unzip chroma_db_image.zip
+$ wget https://drive.google.com/file/d/1qTlAlvJZLoyY0yVDAsLelSozRHcvzllh/view?usp=sharing
+$ unzip db.zip
 ```
 
 ### To run this project with docker locally
