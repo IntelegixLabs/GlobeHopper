@@ -14,3 +14,4 @@ chromadb==0.4.21
 SpeechRecognition==3.10.1
 python-telegram-bot==20.7
 googletrans-py39==4.0.2
+google-generativeai==0.7.0
