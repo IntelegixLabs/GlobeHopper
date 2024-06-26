@@ -16,6 +16,7 @@ from langchain_core.runnables import RunnablePassthrough
 
 import cohere
 from openai import OpenAI
+from langfuse.openai import openai
 import google.generativeai as genai
 
 from api.utils import get_pixel_images, fetch_weather_data, fetch_hotel_data, language_translate
@@ -217,7 +218,7 @@ def travel_planner_single_destination():
                  "itinerary": 
                     [
                         { 
-                            "Day": "Day number follow format as 1" ,
+                            "day": "Day number follow format as 1" ,
                             "morning": "suggest popular restaurants to have breakfast, suggest places of interest, commute to places" ,
                             "afternoon": "suggest popular restaurants to have lunch, suggest places of interest, commute to places"  ,
                             "evening": "suggest popular restaurants to have snacks and party, suggest places of interest, commute to places" ,
