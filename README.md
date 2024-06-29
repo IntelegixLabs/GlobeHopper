@@ -8,14 +8,14 @@ The existing challenges in the travel industry <b>need to include the need for q
 
 ## Package Builder & Dynamic Itinerary Generator
 
-- Take customise input as user preferences.
+- Take customized input as user preferences.
 - Select your destination, i.e. Europe -> and then select the cities you want to travel to, our Gen AI App, will create a travel 
   itinerary for you that you can customize according to your needs.
-- Multi Lingual support, enables the user to get the travel itinerary in their preferred language.
+- Multi-Lingual support, enables the user to get the travel itinerary in their preferred language.
 - Customized map/direction from source to destination.
 - Curate personalized travel packages using GenAI.
 - Weather conditions.
-- Some Iconic images/video of the place you want to travel.
+- Some Iconic images/videos of the place you want to travel.
 - Suggest the Best time to travel.
 - Modify itineraries, and the AI will adjust recommendations accordingly.
 - Book hotels, using TBO APIs.
@@ -56,6 +56,9 @@ The existing challenges in the travel industry <b>need to include the need for q
 ```sh
 $ git clone https://github.com/IntelegixLabs/GlobeHopper.git
 $ cd GlobeHopper
+$ gcloud auth login
+$ python -m venv venv
+$ venv/Scripts/activate
 $ pip install -r requirements.txt
 $ python app.py
 ```
